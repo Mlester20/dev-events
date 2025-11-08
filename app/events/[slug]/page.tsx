@@ -1,6 +1,10 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import BookEvent from "@/components/BookEvent";
+import { getSimilarEventsBySlug } from "@/lib/actions/event.actions";
+import EventCard from "@/components/EventCard";
+import { IEvent } from "@/database";
+
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
@@ -38,6 +42,10 @@ const EventDetailPage = async ({ params } : {params: Promise<{ slug: string }>})
   if(!description) return notFound();
 
   const bookings =  10;
+
+  const similarEvents: IEvent[] = await getSimilarEventsBySlug(slug);
+
+  console.log({similarEvents});
 
   return (
     <section id="event">
@@ -92,6 +100,15 @@ const EventDetailPage = async ({ params } : {params: Promise<{ slug: string }>})
               <BookEvent />
           </div>
         </aside>
+      </div>
+
+      <div className="flex w-full flex-col gap-4 pt-20">
+        <h2>Similar Events You May Like</h2>
+        <div className="events">
+          {similarEvents.length > 0 && similarEvents.map((similarEvents: IEvent) => (
+            <EventCard key = { similarEvents.title } {...similarEvents} />
+          ))}
+        </div>
       </div>
 
     </section>
